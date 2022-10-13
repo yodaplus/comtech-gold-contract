@@ -1,5 +1,23 @@
 {
   "name": "hardhat-project",
+  "scripts": {
+    "test": "hardhat test",
+    "test-update-snapshots": "CHAI_SNAPSHOT_UPDATE=true hardhat test",
+    "start": "CHAI_SNAPSHOT_UPDATE=true npm test && hardhat watch test",
+    "compile": "hardhat compile",
+    "deploy-mainnet": "hardhat --network mainnet deploy --reset --export deployments/mainnet.json",
+    "deploy-apothem": "hardhat --network apothem deploy --reset --export deployments/apothem.json",
+    "remixd": "remixd -s ./ -u https://remix.ethereum.org",
+    "gas": "REPORT_GAS=true npm test",
+    "size": "hardhat size-contracts",
+    "coverage": "hardhat coverage",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "contracts/**/*.sol": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "@nomiclabs/hardhat-ethers": "^2.1.1",
@@ -26,5 +44,8 @@
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
     "web3": "^1.8.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.2.0-solc-0.7"
   }
 }

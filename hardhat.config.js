@@ -7,7 +7,7 @@ require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 
-const { MNEMONIC } = process.env;
+const { MNEMONIC, APOTHEM_RPC_URL, MAINNET_RPC_URL } = process.env;
 const DEFAULT_MNEMONIC =
   "vague address accident certain range neither vapor void rural little ensure resource";
 
@@ -16,6 +16,9 @@ const sharedNetworkConfig = {
     mnemonic: MNEMONIC ?? DEFAULT_MNEMONIC,
   },
 };
+
+// APOTHEM_RPC_URL = "https://rpc-apothem.xinfin.yodaplus.net";
+// MAINNET_RPC_URL = "https://rpc.xinfin.yodaplus.net";
 
 module.exports = {
   solidity: {

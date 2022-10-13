@@ -28,6 +28,10 @@ interface IERC20 {
 
   function mint(address to, uint256 amount) external;
 
+  function burn(uint256 amount) external;
+
+  function blacklistUpdate(address user, bool value) external;
+
   function transferOwnership(address newOwner) external;
 
   /**
