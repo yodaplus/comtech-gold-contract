@@ -73,9 +73,9 @@ contract CGOController is Ownable {
     if (amount != 1000) {
       revert("Burn amount should be 1000");
     }
-    // if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
-    //   revert("Insufficient Funds");
-    // }
+    if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
+      revert("Insufficient Funds");
+    }
     delete barNumWarrantNum[Bar_Number];
     emit BarBurn(address(this), amount * 1e18, Bar_Number, Warrant_Number);
   }
@@ -101,6 +101,16 @@ contract CGOController is Ownable {
   function withdrawFunds(address to, uint256 amount) public onlyOwner {
     IERC20(tokenAddr).transfer(to, amount);
     emit WithdrawFunds(to, amount);
+  }
+
+  function getBalance() public view returns (uint256) {
+    return IERC20(tokenAddr).balanceOf(address(this));
+  }
+
+  function getBool(uint256 amount) public view returns (bool[3] memory flags) {
+    flags[0] = IERC20(tokenAddr).balanceOf(address(this)) < (amount * 1e18);
+    flags[1] = IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18;
+    flags[2] = IERC20(tokenAddr).balanceOf(address(this)) != amount * 1e18;
   }
 
   function transferCgoOwnership(address newOwner) public onlyOwner {
