@@ -3,7 +3,7 @@
   "chainId": "51",
   "contracts": {
     "Goldtoken": {
-      "address": "0x395132550Fd90EF96C327f6FA086B60706Cc3994",
+      "address": "0x464EC16641915CA42EaAc42a75c1e29587f7FC21",
       "abi": [
         {
           "inputs": [],
@@ -440,7 +440,7 @@
       ]
     },
     "CGOController": {
-      "address": "0x5ef54d4da3605DA46112384a275e2bEa8609efAf",
+      "address": "0x53c59D2208f14Ba622084789Ae4aFBf46E1eb37E",
       "abi": [
         {
           "inputs": [
@@ -532,6 +532,19 @@
             }
           ],
           "name": "BarMint",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "status",
+              "type": "bool"
+            }
+          ],
+          "name": "EditBarStatusPaused",
           "type": "event"
         },
         {
@@ -651,6 +664,19 @@
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "isEditBarPaused",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "address",
@@ -689,6 +715,37 @@
             }
           ],
           "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bool",
+              "name": "status",
+              "type": "bool"
+            }
+          ],
+          "name": "pauseEditBar",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "Bar_Number",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "Warrant_Number",
+              "type": "string"
+            }
+          ],
+          "name": "removeBarNumWarrantNum",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         },
         {

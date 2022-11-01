@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract CGOController is Ownable {
   address public tokenAddr;
 
+  bool public isEditBarPaused = false;
+
   // BarNumber => WarrantNumber
   mapping(string => string) public barNumWarrantNum;
 
@@ -32,6 +34,8 @@ contract CGOController is Ownable {
   event WithdrawFunds(address to, uint256 amount);
 
   event BarAdded(string Bar_Number, string Warrant_Number);
+
+  event EditBarStatusPaused(bool status);
 
   constructor(address _tokenAddr) {
     tokenAddr = _tokenAddr;
@@ -63,7 +67,6 @@ contract CGOController is Ownable {
     string memory Bar_Number,
     string memory Warrant_Number
   ) public onlyOwner {
-    IERC20(tokenAddr).burn(amount * 1e18);
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
       keccak256(abi.encodePacked(Warrant_Number))
@@ -73,9 +76,10 @@ contract CGOController is Ownable {
     if (amount != 1000) {
       revert("Burn amount should be 1000");
     }
-    // if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
-    //   revert("Insufficient Funds");
-    // }
+    if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
+      revert("Insufficient Funds");
+    }
+    IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
     emit BarBurn(address(this), amount * 1e18, Bar_Number, Warrant_Number);
   }
@@ -88,6 +92,9 @@ contract CGOController is Ownable {
     string memory Bar_Number,
     string memory Warrant_Number
   ) public onlyOwner {
+    if (isEditBarPaused == true) {
+      revert("Manual Bar Insertion is restricted");
+    }
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
       keccak256(abi.encodePacked(Warrant_Number))
@@ -96,6 +103,27 @@ contract CGOController is Ownable {
     }
     barNumWarrantNum[Bar_Number] = Warrant_Number;
     emit BarAdded(Bar_Number, Warrant_Number);
+  }
+
+  function removeBarNumWarrantNum(
+    string memory Bar_Number,
+    string memory Warrant_Number
+  ) public onlyOwner {
+    if (isEditBarPaused == true) {
+      revert("Manual Bar Removal is restricted");
+    }
+    if (
+      keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
+      keccak256(abi.encodePacked(Warrant_Number))
+    ) {
+      revert("Incorrect Bar details");
+    }
+    delete barNumWarrantNum[Bar_Number];
+  }
+
+  function pauseEditBar(bool status) public onlyOwner {
+    isEditBarPaused = status;
+    emit EditBarStatusPaused(status);
   }
 
   function withdrawFunds(address to, uint256 amount) public onlyOwner {

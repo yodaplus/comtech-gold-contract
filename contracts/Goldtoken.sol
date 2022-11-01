@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0 <0.8.0;
 
-// import "https://github.com/OpenZeppelin/openzeppelinnpm i @openzeppelin/contracts@3.2.0-solc-0.7-contracts/blob/release-v3.2.0-solc-0.7/contracts/token/ERC20/ERC20.sol";
+// import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0-solc-0.7/contracts/token/ERC20/ERC20.sol";
 
 // import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0-solc-0.7/contracts/token/ERC20/ERC20Burnable.sol";
 
@@ -17,7 +17,7 @@ contract Goldtoken is ERC20Burnable, Ownable {
 
   event BlacklistUpdated(address indexed user, bool value);
 
-  constructor() ERC20("dummy poc", "DMMY") Ownable() {
+  constructor() ERC20("CGO TEST DUP", "CGO_T_D") Ownable() {
     // _owner = _msgSender();
     _mint(msg.sender, 10000000 * (0**uint256(decimals())));
   }
