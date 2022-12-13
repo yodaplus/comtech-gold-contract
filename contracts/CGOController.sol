@@ -11,10 +11,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract CGOController is Ownable {
   address public tokenAddr;
 
+  address public initiatorAddr;
+
+  address public executorAddr;
+
   bool public isEditBarPaused = false;
+
+  // Transaction status
+  enum txnStatus {
+    MINT_INITIATED,
+    MINT_COMPLETED,
+    BURN_INITIATED,
+    BURN_COMPLETED
+  }
 
   // BarNumber => WarrantNumber
   mapping(string => string) public barNumWarrantNum;
+
+  mapping(string => mapping(string => txnStatus)) txnStatusRecord;
 
   // events
   event BarMint(
@@ -37,16 +51,83 @@ contract CGOController is Ownable {
 
   event EditBarStatusPaused(bool status);
 
+  event MintInitiated(
+    string Bar_Number,
+    string Warrant_Number,
+    txnStatus status
+  );
+
+  event BurnInitiated(
+    string Bar_Number,
+    string Warrant_Number,
+    txnStatus status
+  );
+
   constructor(address _tokenAddr) {
     tokenAddr = _tokenAddr;
+    initiatorAddr = msg.sender;
   }
 
+  modifier onlyInitiator() {
+    if (msg.sender != initiatorAddr) {
+      revert("Only Initiator can call this function");
+    }
+    _;
+  }
+
+  modifier onlyExecutor() {
+    if (msg.sender != executorAddr) {
+      revert("Only Executor can call this function");
+    }
+    _;
+  }
+
+  // set initiator address
+  function setInitiatorAddr(address _initiatorAddr) public onlyOwner {
+    initiatorAddr = _initiatorAddr;
+  }
+
+  // set executor address
+  function setExecutorAddr(address _executorAddr) public onlyOwner {
+    executorAddr = _executorAddr;
+  }
+
+  // initiate mint
+  function initiateMint(string memory Bar_Number, string memory Warrant_Number)
+    public
+    onlyInitiator
+  {
+    if (
+      keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
+      keccak256(abi.encodePacked(Warrant_Number))
+    ) {
+      revert("Bar already exist");
+    }
+    // check inititation request
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.MINT_INITIATED
+    ) {
+      revert("Mint initiation request already exist");
+    }
+    // check for burn initiation OR complete request
+    if (
+      (txnStatusRecord[Bar_Number][Warrant_Number] ==
+        txnStatus.BURN_INITIATED) ||
+      (txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.BURN_COMPLETED)
+    ) {
+      revert("Burn request exist for this Bar");
+    }
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_INITIATED;
+    emit MintInitiated(Bar_Number, Warrant_Number, txnStatus.MINT_INITIATED);
+  }
+
+  // Execute mint
   function mint(
     address to,
     uint256 amount,
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyOwner {
+  ) public onlyExecutor {
     IERC20(tokenAddr).mint(to, amount * 1e18);
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
@@ -54,11 +135,45 @@ contract CGOController is Ownable {
     ) {
       revert("Bar already exist");
     }
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_INITIATED
+    ) {
+      revert("Mint initiation request not exist");
+    }
     if (amount != 1000) {
       revert("Mint amount should be 1000");
     }
     barNumWarrantNum[Bar_Number] = Warrant_Number;
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
     emit BarMint(to, amount * 1e18, Bar_Number, Warrant_Number);
+  }
+
+  // initiate burn
+  function initiateBurn(string memory Bar_Number, string memory Warrant_Number)
+    public
+    onlyInitiator
+  {
+    // check inititation request
+    if (
+      (txnStatusRecord[Bar_Number][Warrant_Number] ==
+        txnStatus.BURN_INITIATED) ||
+      (txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.BURN_COMPLETED)
+    ) {
+      revert("Burn request already exist");
+    }
+    if (
+      keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
+      keccak256(abi.encodePacked(Warrant_Number))
+    ) {
+      revert("Incorrect Bar details");
+    }
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_COMPLETED
+    ) {
+      revert("Mint request not exist");
+    }
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_INITIATED;
+    emit BurnInitiated(Bar_Number, Warrant_Number, txnStatus.BURN_INITIATED);
   }
 
   // burn implementation
@@ -66,12 +181,17 @@ contract CGOController is Ownable {
     uint256 amount,
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyOwner {
+  ) public onlyExecutor {
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
       keccak256(abi.encodePacked(Warrant_Number))
     ) {
       revert("Incorrect Bar details");
+    }
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.BURN_INITIATED
+    ) {
+      revert("Burn initiation request not exist");
     }
     if (amount != 1000) {
       revert("Burn amount should be 1000");
@@ -81,6 +201,7 @@ contract CGOController is Ownable {
     }
     IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_COMPLETED;
     emit BarBurn(address(this), amount * 1e18, Bar_Number, Warrant_Number);
   }
 
