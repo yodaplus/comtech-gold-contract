@@ -8,6 +8,8 @@ import "./interfaces/IERC20.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "hardhat/console.sol";
+
 contract CGOController is Ownable {
   address public tokenAddr;
 
@@ -28,7 +30,7 @@ contract CGOController is Ownable {
   // BarNumber => WarrantNumber
   mapping(string => string) public barNumWarrantNum;
 
-  mapping(string => mapping(string => txnStatus)) txnStatusRecord;
+  mapping(string => mapping(string => txnStatus)) public txnStatusRecord;
 
   // events
   event BarMint(
@@ -97,6 +99,10 @@ contract CGOController is Ownable {
     public
     onlyInitiator
   {
+    console.log(
+      " ~ file: CGOController.sol:111 ~ txnStatusRecord[Bar_Number][Warrant_Number]",
+      txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.MINT_INITIATED
+    );
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
       keccak256(abi.encodePacked(Warrant_Number))
