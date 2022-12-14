@@ -1,0 +1,26 @@
+{
+  "bar1": {
+    "bar_number": "marathon",
+    "warrant_number": "collapse"
+  },
+  "bar2": {
+    "bar_number": "workshop",
+    "warrant_number": "conflict"
+  },
+  "bar3": {
+    "bar_number": "relative",
+    "warrant_number": "relative"
+  },
+  "bar4": {
+    "bar_number": "exercise",
+    "warrant_number": "twilight"
+  },
+  "bar5": {
+    "bar_number": "describe",
+    "warrant_number": "prospect"
+  },
+  "bar6": {
+    "bar_number": "gradient",
+    "warrant_number": "terminal"
+  }
+}

@@ -21,6 +21,7 @@ contract CGOController is Ownable {
 
   // Transaction status
   enum txnStatus {
+    NOT_EXIST,
     MINT_INITIATED,
     MINT_COMPLETED,
     BURN_INITIATED,
@@ -99,10 +100,14 @@ contract CGOController is Ownable {
     public
     onlyInitiator
   {
-    console.log(
-      " ~ file: CGOController.sol:111 ~ txnStatusRecord[Bar_Number][Warrant_Number]",
-      txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.MINT_INITIATED
-    );
+    // check for burn initiation OR complete request
+    if (
+      (txnStatusRecord[Bar_Number][Warrant_Number] ==
+        txnStatus.BURN_INITIATED) ||
+      (txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.BURN_COMPLETED)
+    ) {
+      revert("Burn request exist for this Bar");
+    }
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
       keccak256(abi.encodePacked(Warrant_Number))
@@ -115,14 +120,7 @@ contract CGOController is Ownable {
     ) {
       revert("Mint initiation request already exist");
     }
-    // check for burn initiation OR complete request
-    if (
-      (txnStatusRecord[Bar_Number][Warrant_Number] ==
-        txnStatus.BURN_INITIATED) ||
-      (txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.BURN_COMPLETED)
-    ) {
-      revert("Burn request exist for this Bar");
-    }
+
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_INITIATED;
     emit MintInitiated(Bar_Number, Warrant_Number, txnStatus.MINT_INITIATED);
   }
