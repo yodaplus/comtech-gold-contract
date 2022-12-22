@@ -216,28 +216,28 @@ describe("CGOController", function () {
     ).to.be.revertedWith("Only Initiator can call this function");
   });
 
-  it("burn initiate should revert if bar not exist", async function () {
+  it("burn initiate should revert with Insufficient CGO Balance", async function () {
     await expect(
       cgoController_contract
         .connect(initiator)
         .initiateBurn(data.bar3.bar_number, data.bar3.warrant_number)
-    ).to.be.revertedWith("Incorrect Bar details");
+    ).to.be.revertedWith("Insufficient CGO Balance");
   });
 
-  it("initiate burn request", async function () {
-    const _initiate_burn = await cgoController_contract
-      .connect(initiator)
-      .initiateBurn(data.bar1.bar_number, data.bar1.warrant_number);
-    await expect(_initiate_burn)
-      .to.emit(cgoController_contract, "BurnInitiated")
-      .withArgs(data.bar1.bar_number, data.bar1.warrant_number, BURN_INITIATED);
-    expect(
-      await cgoController_contract.txnStatusRecord(
-        data.bar1.bar_number,
-        data.bar1.warrant_number
-      )
-    ).to.equal(BURN_INITIATED);
-  });
+  // it("burn initiate should revert if bar not exist", async function () {
+  //   await expect(
+  //     cgoController_contract
+  //       .connect(initiator)
+  //       .initiateBurn(data.bar3.bar_number, data.bar3.warrant_number)
+  //   ).to.be.revertedWith("Incorrect Bar details");
+  // });
+
+  // it("initiate burn request", async function () {
+  //   const _initiate_burn = await cgoController_contract
+  //     .connect(initiator)
+  //     .initiateBurn(data.bar1.bar_number, data.bar1.warrant_number);
+  //   await expect(_initiate_burn).revertedWith("Insufficient Funds");
+  // });
 
   it("transfer 500 CGO token", async function () {
     const _transfer = await cgo_contract
@@ -252,15 +252,15 @@ describe("CGOController", function () {
     ).to.equal(partialAmt);
   });
 
-  it("should revert as insufficient balance", async function () {
+  it("should revert with insufficient funds", async function () {
     await expect(
       cgoController_contract
-        .connect(executor)
-        .burn(1000, data.bar1.bar_number, data.bar1.warrant_number)
-    ).to.be.revertedWith("Burn amount should be 1000");
+        .connect(initiator)
+        .initiateBurn(data.bar1.bar_number, data.bar1.warrant_number)
+    ).to.be.revertedWith("Insufficient CGO Balance");
   });
 
-  it("burn should revert with Incorrect Bar details", async function () {
+  it("burn should revert with incorrect Bar Details", async function () {
     await expect(
       cgoController_contract
         .connect(executor)
@@ -289,12 +289,35 @@ describe("CGOController", function () {
     ).to.equal(mintAmt);
   });
 
+  it("initiate burn request", async function () {
+    const _initiate_burn = await cgoController_contract
+      .connect(initiator)
+      .initiateBurn(data.bar1.bar_number, data.bar1.warrant_number);
+    await expect(_initiate_burn)
+      .to.emit(cgoController_contract, "BurnInitiated")
+      .withArgs(data.bar1.bar_number, data.bar1.warrant_number, BURN_INITIATED);
+    expect(
+      await cgoController_contract.txnStatusRecord(
+        data.bar1.bar_number,
+        data.bar1.warrant_number
+      )
+    ).to.equal(BURN_INITIATED);
+  });
+
   it("inititae mint revert as Burn request already exist", async function () {
     await expect(
       cgoController_contract
         .connect(initiator)
         .initiateMint(data.bar1.bar_number, data.bar1.warrant_number)
     ).to.be.revertedWith("Burn request exist for this Bar");
+  });
+
+  it("should revert as Burn amount should be 1000", async function () {
+    await expect(
+      cgoController_contract
+        .connect(executor)
+        .burn(100, data.bar1.bar_number, data.bar1.warrant_number)
+    ).to.be.revertedWith("Burn amount should be 1000");
   });
 
   it("should burn the token", async function () {

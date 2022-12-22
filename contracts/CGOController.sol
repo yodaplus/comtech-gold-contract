@@ -66,6 +66,18 @@ contract CGOController is Ownable {
     txnStatus status
   );
 
+  event MintCancelled(
+    string Bar_Number,
+    string Warrant_Number,
+    txnStatus status
+  );
+
+  event BurnCancelled(
+    string Bar_Number,
+    string Warrant_Number,
+    txnStatus status
+  );
+
   constructor(address _tokenAddr) {
     tokenAddr = _tokenAddr;
     initiatorAddr = msg.sender;
@@ -125,6 +137,36 @@ contract CGOController is Ownable {
     emit MintInitiated(Bar_Number, Warrant_Number, txnStatus.MINT_INITIATED);
   }
 
+  // cancel Initiate mint request
+  function cancelInitiateMint(
+    string memory Bar_Number,
+    string memory Warrant_Number
+  ) public onlyExecutor {
+    // check for burn initiation OR complete request
+    if (
+      (txnStatusRecord[Bar_Number][Warrant_Number] ==
+        txnStatus.BURN_INITIATED) ||
+      (txnStatusRecord[Bar_Number][Warrant_Number] == txnStatus.BURN_COMPLETED)
+    ) {
+      revert("Burn request exist for this Bar");
+    }
+    if (
+      keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
+      keccak256(abi.encodePacked(Warrant_Number))
+    ) {
+      revert("Bar already exist");
+    }
+    // check inititation request
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_INITIATED
+    ) {
+      revert("Mint initiation request not exist");
+    }
+
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.NOT_EXIST;
+    emit MintCancelled(Bar_Number, Warrant_Number, txnStatus.NOT_EXIST);
+  }
+
   // Execute mint
   function mint(
     address to,
@@ -158,6 +200,9 @@ contract CGOController is Ownable {
     onlyInitiator
   {
     // check inititation request
+    if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
+      revert("Insufficient CGO Balance");
+    }
     if (
       (txnStatusRecord[Bar_Number][Warrant_Number] ==
         txnStatus.BURN_INITIATED) ||
@@ -178,6 +223,37 @@ contract CGOController is Ownable {
     }
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_INITIATED;
     emit BurnInitiated(Bar_Number, Warrant_Number, txnStatus.BURN_INITIATED);
+  }
+
+  // cancel Initiate burn request
+  function cancelInitiateBurn(
+    string memory Bar_Number,
+    string memory Warrant_Number
+  ) public onlyExecutor {
+    // check inititation request
+    if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
+      revert("Insufficient CGO Balance");
+    }
+    if (
+      (txnStatusRecord[Bar_Number][Warrant_Number] !=
+        txnStatus.BURN_INITIATED) &&
+      (txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.BURN_COMPLETED)
+    ) {
+      revert("Burn request not exist");
+    }
+    if (
+      keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
+      keccak256(abi.encodePacked(Warrant_Number))
+    ) {
+      revert("Incorrect Bar details");
+    }
+    if (
+      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_COMPLETED
+    ) {
+      revert("Mint request not exist");
+    }
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
+    emit BurnCancelled(Bar_Number, Warrant_Number, txnStatus.MINT_COMPLETED);
   }
 
   // burn implementation
@@ -201,7 +277,7 @@ contract CGOController is Ownable {
       revert("Burn amount should be 1000");
     }
     if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
-      revert("Insufficient Funds");
+      revert("Insufficient CGO Balance");
     }
     IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
@@ -227,6 +303,7 @@ contract CGOController is Ownable {
       revert("Bar already exist");
     }
     barNumWarrantNum[Bar_Number] = Warrant_Number;
+    txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
     emit BarAdded(Bar_Number, Warrant_Number);
   }
 
@@ -244,6 +321,7 @@ contract CGOController is Ownable {
       revert("Incorrect Bar details");
     }
     delete barNumWarrantNum[Bar_Number];
+    delete txnStatusRecord[Bar_Number][Warrant_Number];
   }
 
   function pauseEditBar(bool status) public onlyOwner {
