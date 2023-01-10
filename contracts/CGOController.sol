@@ -11,15 +11,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
 contract CGOController is Ownable {
-  address public tokenAddr;
+  address public tokenAddr;   // CGO token address
 
-  address public initiatorAddr;
+  address public initiatorAddr;  // Initiator address
 
-  address public executorAddr;
+  address public executorAddr;  // Executor address
 
-  bool public isEditBarPaused = false;
+  bool public isEditBarPaused = false;  // Edit Bar status 
 
-  // Transaction status
+  // Transaction status for Bar [Not Exist, Mint Initiated, Mint Completed, Burn Initiated, Burn Completed]
   enum txnStatus {
     NOT_EXIST,
     MINT_INITIATED,
@@ -28,9 +28,12 @@ contract CGOController is Ownable {
     BURN_COMPLETED
   }
 
+  // Store Bar Details
   // BarNumber => WarrantNumber
   mapping(string => string) public barNumWarrantNum;
 
+  // Store txn status for Bar
+  // BarNumber => WarrantNumber
   mapping(string => mapping(string => txnStatus)) public txnStatusRecord;
 
   // events
@@ -78,11 +81,13 @@ contract CGOController is Ownable {
     txnStatus status
   );
 
+  // Set token address and initiator address on contract creation
   constructor(address _tokenAddr) {
     tokenAddr = _tokenAddr;
     initiatorAddr = msg.sender;
   }
 
+  // Modifier - only Initiator 
   modifier onlyInitiator() {
     if (msg.sender != initiatorAddr) {
       revert("Only Initiator can call this function");
@@ -90,6 +95,7 @@ contract CGOController is Ownable {
     _;
   }
 
+  // Modifier - only Executor
   modifier onlyExecutor() {
     if (msg.sender != executorAddr) {
       revert("Only Executor can call this function");
@@ -107,7 +113,7 @@ contract CGOController is Ownable {
     executorAddr = _executorAddr;
   }
 
-  // initiate mint
+  // initiate mint with bar details (Bar_Number, Warrant_Number)
   function initiateMint(string memory Bar_Number, string memory Warrant_Number)
     public
     onlyInitiator
@@ -167,13 +173,15 @@ contract CGOController is Ownable {
     emit MintCancelled(Bar_Number, Warrant_Number, txnStatus.NOT_EXIST);
   }
 
-  // Execute mint
+  // Execute mint with bar details (Bar_Number, Warrant_Number)
+  // Call mint function of CGO token contract using ERC20 interface
   function mint(
     address to,
     uint256 amount,
     string memory Bar_Number,
     string memory Warrant_Number
   ) public onlyExecutor {
+    // mint function call on CGO token contract
     IERC20(tokenAddr).mint(to, amount * 1e18);
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
@@ -194,7 +202,7 @@ contract CGOController is Ownable {
     emit BarMint(to, amount * 1e18, Bar_Number, Warrant_Number);
   }
 
-  // initiate burn
+  // initiate burn with bar details (Bar_Number, Warrant_Number)
   function initiateBurn(string memory Bar_Number, string memory Warrant_Number)
     public
     onlyInitiator
@@ -256,7 +264,8 @@ contract CGOController is Ownable {
     emit BurnCancelled(Bar_Number, Warrant_Number, txnStatus.MINT_COMPLETED);
   }
 
-  // burn implementation
+  // burn implementation with bar details (Bar_Number, Warrant_Number)
+  // Call burn function of CGO token contract using ERC20 interface
   function burn(
     uint256 amount,
     string memory Bar_Number,
@@ -279,16 +288,21 @@ contract CGOController is Ownable {
     if (IERC20(tokenAddr).balanceOf(address(this)) < amount * 1e18) {
       revert("Insufficient CGO Balance");
     }
+    // burn function call on CGO token contract
     IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_COMPLETED;
     emit BarBurn(address(this), amount * 1e18, Bar_Number, Warrant_Number);
   }
 
+  // Blacklist update function call on CGO token contract
   function blacklistUpdate(address user, bool value) public virtual onlyOwner {
     IERC20(tokenAddr).blacklistUpdate(user, value);
   }
 
+  // Add Bar Details (Bar_Number, Warrant_Number) for existing tokens in market
+  // This function will be use for onboarding Existing Bars
+  // This function will be depreciated after onboarding all existing bars
   function addBarNumWarrantNum(
     string memory Bar_Number,
     string memory Warrant_Number
@@ -307,6 +321,9 @@ contract CGOController is Ownable {
     emit BarAdded(Bar_Number, Warrant_Number);
   }
 
+  // Remove Bar Details (Bar_Number, Warrant_Number) for existing tokens in market
+  // This function will be use for onboarding Existing Bars
+  // This function will be depreciated after onboarding all existing bars
   function removeBarNumWarrantNum(
     string memory Bar_Number,
     string memory Warrant_Number
@@ -324,16 +341,21 @@ contract CGOController is Ownable {
     delete txnStatusRecord[Bar_Number][Warrant_Number];
   }
 
+  // Pause/Unpause Edit Bar functionality
+  // This function will be use for onboarding Existing Bars
+  // This function will be depreciated after onboarding all existing bars
   function pauseEditBar(bool status) public onlyOwner {
     isEditBarPaused = status;
     emit EditBarStatusPaused(status);
   }
 
+  // Withdraw CGO tokens from contract to owner address using ERC20 interface
   function withdrawFunds(address to, uint256 amount) public onlyOwner {
     IERC20(tokenAddr).transfer(to, amount);
     emit WithdrawFunds(to, amount);
   }
 
+  // Transfer ownership of CGO token contract to new owner using ERC20 interface
   function transferCgoOwnership(address newOwner) public onlyOwner {
     IERC20(tokenAddr).transferOwnership(newOwner);
   }
