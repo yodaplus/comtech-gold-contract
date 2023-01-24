@@ -3,7 +3,7 @@
   "chainId": "51",
   "contracts": {
     "Goldtoken": {
-      "address": "0x013540113Ea6b31F66335aE735610411a4b0F563",
+      "address": "0xb162D21D85d3E4d0C436645D9cd85853D871437A",
       "abi": [
         {
           "inputs": [],
@@ -440,7 +440,7 @@
       ]
     },
     "CGOController": {
-      "address": "0x70BB2e9F74a40Ee9A7e3F947aa5F7C68add21729",
+      "address": "0xC2F655621AA4583857a2256ed40C8730E5779ab7",
       "abi": [
         {
           "inputs": [
@@ -556,6 +556,31 @@
               "type": "uint8"
             }
           ],
+          "name": "BurnCancelled",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "Bar_Number",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "Warrant_Number",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "enum CGOController.txnStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
           "name": "BurnInitiated",
           "type": "event"
         },
@@ -570,6 +595,31 @@
             }
           ],
           "name": "EditBarStatusPaused",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "Bar_Number",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "Warrant_Number",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "enum CGOController.txnStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
+          "name": "MintCancelled",
           "type": "event"
         },
         {
@@ -709,6 +759,42 @@
             }
           ],
           "name": "burn",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "Bar_Number",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "Warrant_Number",
+              "type": "string"
+            }
+          ],
+          "name": "cancelInitiateBurn",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "Bar_Number",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "Warrant_Number",
+              "type": "string"
+            }
+          ],
+          "name": "cancelInitiateMint",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"

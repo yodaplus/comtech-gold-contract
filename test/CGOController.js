@@ -81,6 +81,14 @@ describe("CGOController", function () {
     // console.log("Data:", data.bar1.bar_number, data.bar1.warrant_number);
   });
 
+  it("should revert with Mint initiation request not exist", async function () {
+    await expect(
+      cgoController_contract
+        .connect(executor)
+        .cancelInitiateMint(data.bar1.bar_number, data.bar1.warrant_number)
+    ).to.be.revertedWith("Mint initiation request not exist");
+  });
+
   it("initiate bar mint", async function () {
     const _initiate_mint = await cgoController_contract
       .connect(initiator)
@@ -118,6 +126,14 @@ describe("CGOController", function () {
         data.bar1.warrant_number
       )
     ).to.equal(MINT_INITIATED);
+  });
+
+  it("cancel initiate mint should fail if not cancelled by executor", async function () {
+    await expect(
+      cgoController_contract
+        .connect(acc1)
+        .cancelInitiateMint(data.bar1.bar_number, data.bar1.warrant_number)
+    ).to.be.revertedWith("Only Executor can call this function");
   });
 
   it("initiate bar mint 2", async function () {

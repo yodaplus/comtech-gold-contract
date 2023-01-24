@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICESNED
 
 pragma solidity >=0.7.0 <0.8.0;
 
@@ -255,11 +255,11 @@ contract CGOController is Ownable {
     ) {
       revert("Incorrect Bar details");
     }
-    if (
-      txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_COMPLETED
-    ) {
-      revert("Mint request not exist");
-    }
+    // if (
+    //   txnStatusRecord[Bar_Number][Warrant_Number] != txnStatus.MINT_COMPLETED
+    // ) {
+    //   revert("Mint request not exist");
+    // }
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
     emit BurnCancelled(Bar_Number, Warrant_Number, txnStatus.MINT_COMPLETED);
   }
