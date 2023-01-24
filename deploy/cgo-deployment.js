@@ -11,8 +11,14 @@ module.exports = async ({ getNamedAccounts, deployments, network }) => {
   // deploy with contructor
   const { address: cgoController } = await deploy("CGOController", {
     from: owner,
-    args: [tknAddress],
-    // args: ["0x84bD9f6B49B2C821AcAcb7fD22C5866F5c346b86"],
+    proxy: {
+      proxyContract: "OpenZeppelinTransparentProxy",
+      execute: {
+        methodName: "initialize",
+        args: [tknAddress],
+        // args: ["0x84bD9f6B49B2C821AcAcb7fD22C5866F5c346b86"],
+      },
+    },
   });
 
   console.log("CGOController deployed to:", cgoController);

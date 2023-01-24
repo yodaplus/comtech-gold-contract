@@ -2,22 +2,29 @@
 
 pragma solidity >=0.7.0 <0.8.0;
 
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IERC20.sol";
+
 // import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0-solc-0.7/contracts/access/Ownable.sol";
 
+// import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/release-v3.2.0-solc-0.7/contracts/access/OwnableUpgradeable.sol";
+
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
 import "hardhat/console.sol";
 
-contract CGOController is Ownable {
-  address public tokenAddr;   // CGO token address
+contract CGOController is Initializable, OwnableUpgradeable {
+  using AddressUpgradeable for address;
 
-  address public initiatorAddr;  // Initiator address
+  address public tokenAddr; // CGO token address
 
-  address public executorAddr;  // Executor address
+  address public initiatorAddr; // Initiator address
 
-  bool public isEditBarPaused = false;  // Edit Bar status 
+  address public executorAddr; // Executor address
+
+  bool public isEditBarPaused = false; // Edit Bar status
 
   // Transaction status for Bar [Not Exist, Mint Initiated, Mint Completed, Burn Initiated, Burn Completed]
   enum txnStatus {
@@ -82,12 +89,13 @@ contract CGOController is Ownable {
   );
 
   // Set token address and initiator address on contract creation
-  constructor(address _tokenAddr) {
+  function initialize(address _tokenAddr) public initializer {
     tokenAddr = _tokenAddr;
     initiatorAddr = msg.sender;
+    __Ownable_init();
   }
 
-  // Modifier - only Initiator 
+  // Modifier - only Initiator
   modifier onlyInitiator() {
     if (msg.sender != initiatorAddr) {
       revert("Only Initiator can call this function");
