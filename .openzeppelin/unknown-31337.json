@@ -1,0 +1,166 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "txHash": "0x5312c8d4e9da5fe922f1c1bb82edadc2ede407b89f7b37a7cadc785892c7b156"
+  },
+  "proxies": [
+    {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0xa562eb6560aaab2ec2f84a755ecceb97375b2733ec20104968024ea42833b571",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "54d433ff9bc7c66dde7ff6d3ffbcad0d44edac76ca79f251c1982c13bdb26f8b": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "txHash": "0x7bdeb5609e4314e0540639582fc029e1b2632a49dcdef25a31211bcf4bb6a4e2",
+      "layout": {
+        "solcVersion": "0.7.6",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "tokenAddr",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:21"
+          },
+          {
+            "label": "initiatorAddr",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_address",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:23"
+          },
+          {
+            "label": "executorAddr",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_address",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:25"
+          },
+          {
+            "label": "isEditBarPaused",
+            "offset": 20,
+            "slot": "103",
+            "type": "t_bool",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:27"
+          },
+          {
+            "label": "barNumWarrantNum",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_string_memory_ptr,t_string_storage)",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:40"
+          },
+          {
+            "label": "txnStatusRecord",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_string_memory_ptr,t_mapping(t_string_memory_ptr,t_enum(txnStatus)1606))",
+            "contract": "CGOController",
+            "src": "contracts/CGOController.sol:44"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_enum(txnStatus)1606": {
+            "label": "enum CGOController.txnStatus",
+            "members": [
+              "NOT_EXIST",
+              "MINT_INITIATED",
+              "MINT_COMPLETED",
+              "BURN_INITIATED",
+              "BURN_COMPLETED"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_string_memory_ptr,t_enum(txnStatus)1606)": {
+            "label": "mapping(string => enum CGOController.txnStatus)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_mapping(t_string_memory_ptr,t_enum(txnStatus)1606))": {
+            "label": "mapping(string => mapping(string => enum CGOController.txnStatus))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_string_storage)": {
+            "label": "mapping(string => string)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}

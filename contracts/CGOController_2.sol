@@ -15,7 +15,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
 import "hardhat/console.sol";
 
-contract CGOController is Initializable, OwnableUpgradeable {
+contract CGOController2 is Initializable, OwnableUpgradeable {
   using AddressUpgradeable for address;
 
   address public tokenAddr; // CGO token address
@@ -42,6 +42,8 @@ contract CGOController is Initializable, OwnableUpgradeable {
   // Store txn status for Bar
   // BarNumber => WarrantNumber
   mapping(string => mapping(string => txnStatus)) public txnStatusRecord;
+
+  address public minterWallet; // Minter wallet address
 
   // events
   event BarMint(
@@ -124,10 +126,10 @@ contract CGOController is Initializable, OwnableUpgradeable {
   }
 
   // initiate mint with bar details (Bar_Number, Warrant_Number)
-  function initiateMint(string memory Bar_Number, string memory Warrant_Number)
-    public
-    onlyInitiator
-  {
+  function initiateMint(
+    string memory Bar_Number,
+    string memory Warrant_Number
+  ) public onlyInitiator {
     // check for burn initiation OR complete request
     if (
       (txnStatusRecord[Bar_Number][Warrant_Number] ==
@@ -213,10 +215,10 @@ contract CGOController is Initializable, OwnableUpgradeable {
   }
 
   // initiate burn with bar details (Bar_Number, Warrant_Number)
-  function initiateBurn(string memory Bar_Number, string memory Warrant_Number)
-    public
-    onlyInitiator
-  {
+  function initiateBurn(
+    string memory Bar_Number,
+    string memory Warrant_Number
+  ) public onlyInitiator {
     // check inititation request
     if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
       revert("Insufficient CGO Balance");
@@ -368,5 +370,10 @@ contract CGOController is Initializable, OwnableUpgradeable {
   // Transfer ownership of CGO token contract to new owner using ERC20 interface
   function transferCgoOwnership(address newOwner) public onlyOwner {
     IERC20(tokenAddr).transferOwnership(newOwner);
+  }
+
+  // set minter wallet address
+  function setMinterWallet(address _minterWallet) public onlyOwner {
+    minterWallet = _minterWallet;
   }
 }

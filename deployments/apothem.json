@@ -3,7 +3,7 @@
   "chainId": "51",
   "contracts": {
     "Goldtoken": {
-      "address": "0x36B24EB0086152754fF1B8F57Db2cD0a30Bf03eb",
+      "address": "0xA4fa5026Ce09beC305949096c3Eb787BdE27EC58",
       "abi": [
         {
           "inputs": [],
@@ -440,7 +440,7 @@
       ]
     },
     "DefaultProxyAdmin": {
-      "address": "0x2BD61ae5116a1F2414C933db81d8Fbff5D747A09",
+      "address": "0x84D54A5e9FE701B2Ba66d88d920bB145B4c24fE8",
       "abi": [
         {
           "inputs": [
@@ -605,7 +605,7 @@
       ]
     },
     "CGOController_Implementation": {
-      "address": "0x78086c9541104222557e85fFb4ff74C8C88ad9d4",
+      "address": "0x9b83680F226295A3D261a913e873B601d6fc6954",
       "abi": [
         {
           "anonymous": false,
@@ -1230,7 +1230,7 @@
       ]
     },
     "CGOController_Proxy": {
-      "address": "0x96EDb8e8103dDc9F7FAF42A3B351F035e8cE110E",
+      "address": "0x030Cb8CF9Bbd62D1bBd705D8AFf687d74c87BbF2",
       "abi": [
         {
           "inputs": [
@@ -1379,7 +1379,7 @@
       ]
     },
     "CGOController": {
-      "address": "0x96EDb8e8103dDc9F7FAF42A3B351F035e8cE110E",
+      "address": "0x030Cb8CF9Bbd62D1bBd705D8AFf687d74c87BbF2",
       "abi": [
         {
           "anonymous": false,
