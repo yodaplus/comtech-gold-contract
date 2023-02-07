@@ -6,7 +6,7 @@
     "start": "CHAI_SNAPSHOT_UPDATE=true npm test && hardhat watch test",
     "compile": "hardhat compile",
     "deploy-mainnet": "hardhat --network mainnet deploy --reset --export deployments/mainnet.json",
-    "deploy-apothem": "hardhat --network apothem deploy --reset --export deployments/apothem.json",
+    "deploy-apothem": "hardhat --network apothem deploy --export deployments/apothem.json",
     "remixd": "remixd -s ./ -u https://remix.ethereum.org",
     "gas": "REPORT_GAS=true npm test",
     "size": "hardhat size-contracts",
