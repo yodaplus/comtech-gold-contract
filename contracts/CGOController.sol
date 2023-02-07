@@ -11,13 +11,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
 contract CGOController is Ownable {
-  address public tokenAddr;   // CGO token address
+  address public tokenAddr; // CGO token address
 
-  address public initiatorAddr;  // Initiator address
+  address public initiatorAddr; // Initiator address
 
-  address public executorAddr;  // Executor address
+  address public executorAddr; // Executor address
 
-  bool public isEditBarPaused = false;  // Edit Bar status 
+  bool public isEditBarPaused = false; // Edit Bar status
 
   // Transaction status for Bar [Not Exist, Mint Initiated, Mint Completed, Burn Initiated, Burn Completed]
   enum txnStatus {
@@ -41,44 +41,54 @@ contract CGOController is Ownable {
     address to,
     uint256 amount,
     string Bar_Number,
-    string Warrant_Number
+    string Warrant_Number,
+    uint256 blockTimestamp
   );
 
   event BarBurn(
     address burn_from,
     uint256 amount,
     string Bar_Number,
-    string Warrant_Number
+    string Warrant_Number,
+    uint256 blockTimestamp
   );
 
-  event WithdrawFunds(address to, uint256 amount);
+  event WithdrawFunds(address to, uint256 amount, uint256 blockTimestamp);
 
-  event BarAdded(string Bar_Number, string Warrant_Number);
+  event BarAdded(
+    string Bar_Number,
+    string Warrant_Number,
+    uint256 blockTimestamp
+  );
 
   event EditBarStatusPaused(bool status);
 
   event MintInitiated(
     string Bar_Number,
     string Warrant_Number,
-    txnStatus status
+    txnStatus status,
+    uint256 blockTimestamp
   );
 
   event BurnInitiated(
     string Bar_Number,
     string Warrant_Number,
-    txnStatus status
+    txnStatus status,
+    uint256 blockTimestamp
   );
 
   event MintCancelled(
     string Bar_Number,
     string Warrant_Number,
-    txnStatus status
+    txnStatus status,
+    uint256 blockTimestamp
   );
 
   event BurnCancelled(
     string Bar_Number,
     string Warrant_Number,
-    txnStatus status
+    txnStatus status,
+    uint256 blockTimestamp
   );
 
   // Set token address and initiator address on contract creation
@@ -87,7 +97,7 @@ contract CGOController is Ownable {
     initiatorAddr = msg.sender;
   }
 
-  // Modifier - only Initiator 
+  // Modifier - only Initiator
   modifier onlyInitiator() {
     if (msg.sender != initiatorAddr) {
       revert("Only Initiator can call this function");
@@ -140,7 +150,12 @@ contract CGOController is Ownable {
     }
 
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_INITIATED;
-    emit MintInitiated(Bar_Number, Warrant_Number, txnStatus.MINT_INITIATED);
+    emit MintInitiated(
+      Bar_Number,
+      Warrant_Number,
+      txnStatus.MINT_INITIATED,
+      block.timestamp
+    );
   }
 
   // cancel Initiate mint request
@@ -170,7 +185,12 @@ contract CGOController is Ownable {
     }
 
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.NOT_EXIST;
-    emit MintCancelled(Bar_Number, Warrant_Number, txnStatus.NOT_EXIST);
+    emit MintCancelled(
+      Bar_Number,
+      Warrant_Number,
+      txnStatus.NOT_EXIST,
+      block.timestamp
+    );
   }
 
   // Execute mint with bar details (Bar_Number, Warrant_Number)
@@ -199,7 +219,13 @@ contract CGOController is Ownable {
     }
     barNumWarrantNum[Bar_Number] = Warrant_Number;
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
-    emit BarMint(to, amount * 1e18, Bar_Number, Warrant_Number);
+    emit BarMint(
+      to,
+      amount * 1e18,
+      Bar_Number,
+      Warrant_Number,
+      block.timestamp
+    );
   }
 
   // initiate burn with bar details (Bar_Number, Warrant_Number)
@@ -230,7 +256,12 @@ contract CGOController is Ownable {
       revert("Mint request not exist");
     }
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_INITIATED;
-    emit BurnInitiated(Bar_Number, Warrant_Number, txnStatus.BURN_INITIATED);
+    emit BurnInitiated(
+      Bar_Number,
+      Warrant_Number,
+      txnStatus.BURN_INITIATED,
+      block.timestamp
+    );
   }
 
   // cancel Initiate burn request
@@ -261,7 +292,12 @@ contract CGOController is Ownable {
     //   revert("Mint request not exist");
     // }
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
-    emit BurnCancelled(Bar_Number, Warrant_Number, txnStatus.MINT_COMPLETED);
+    emit BurnCancelled(
+      Bar_Number,
+      Warrant_Number,
+      txnStatus.MINT_COMPLETED,
+      block.timestamp
+    );
   }
 
   // burn implementation with bar details (Bar_Number, Warrant_Number)
@@ -292,7 +328,13 @@ contract CGOController is Ownable {
     IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_COMPLETED;
-    emit BarBurn(address(this), amount * 1e18, Bar_Number, Warrant_Number);
+    emit BarBurn(
+      address(this),
+      amount * 1e18,
+      Bar_Number,
+      Warrant_Number,
+      block.timestamp
+    );
   }
 
   // Blacklist update function call on CGO token contract
@@ -318,7 +360,7 @@ contract CGOController is Ownable {
     }
     barNumWarrantNum[Bar_Number] = Warrant_Number;
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.MINT_COMPLETED;
-    emit BarAdded(Bar_Number, Warrant_Number);
+    emit BarAdded(Bar_Number, Warrant_Number, block.timestamp);
   }
 
   // Remove Bar Details (Bar_Number, Warrant_Number) for existing tokens in market
@@ -352,7 +394,7 @@ contract CGOController is Ownable {
   // Withdraw CGO tokens from contract to owner address using ERC20 interface
   function withdrawFunds(address to, uint256 amount) public onlyOwner {
     IERC20(tokenAddr).transfer(to, amount);
-    emit WithdrawFunds(to, amount);
+    emit WithdrawFunds(to, amount, block.timestamp);
   }
 
   // Transfer ownership of CGO token contract to new owner using ERC20 interface
