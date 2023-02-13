@@ -3,10 +3,12 @@ module.exports = async ({ getNamedAccounts, deployments, network }) => {
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
+  // ***********Deploy token for development only*************
   // const { address: tknAddress } = await deploy("Goldtoken", {
   //   from: owner,
   // });
   // console.log("Goldtoken deployed to:", tknAddress);
+  // ********************************************************
 
   // deploy with contructor
   const { address: cgoController } = await deploy("CGOController", {

@@ -3,7 +3,7 @@
   "chainId": "51",
   "contracts": {
     "CGOController": {
-      "address": "0x0a1b37158Db286baD7d8D3A1E7096E828bE0194E",
+      "address": "0xa76D824b85555e1200E59e3ecCA0E3dB7158d63A",
       "abi": [
         {
           "anonymous": false,
@@ -798,7 +798,7 @@
       ]
     },
     "CGOController_Implementation": {
-      "address": "0x3c253E9ee81BeBddF0E166A64Db9D54F7202935C",
+      "address": "0x09c31920ae05754BC0298acD42A1088926008355",
       "abi": [
         {
           "anonymous": false,
@@ -1449,7 +1449,7 @@
       ]
     },
     "CGOController_Proxy": {
-      "address": "0x0a1b37158Db286baD7d8D3A1E7096E828bE0194E",
+      "address": "0xa76D824b85555e1200E59e3ecCA0E3dB7158d63A",
       "abi": [
         {
           "inputs": [
@@ -1598,7 +1598,7 @@
       ]
     },
     "DefaultProxyAdmin": {
-      "address": "0x28A1AA3CC6dd42311B1c499B66187270EC33F651",
+      "address": "0x673f0B3690dE3125FaA99165C6815Ee5AB0255f1",
       "abi": [
         {
           "inputs": [
