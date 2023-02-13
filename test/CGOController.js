@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers, deployments } = require("hardhat");
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
+const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { deploy } = deployments;
 
 const data = require("./test-data.json");
@@ -102,7 +103,12 @@ describe("CGOController", function () {
 
     await expect(_initiate_mint)
       .to.emit(cgoController_contract, "MintInitiated")
-      .withArgs(data.bar1.bar_number, data.bar1.warrant_number, MINT_INITIATED);
+      .withArgs(
+        data.bar1.bar_number,
+        data.bar1.warrant_number,
+        MINT_INITIATED,
+        anyValue
+      );
 
     // let receipt = await _initiate_mint.wait();
     // console.log(
@@ -143,7 +149,12 @@ describe("CGOController", function () {
 
     await expect(_initiate_mint)
       .to.emit(cgoController_contract, "MintInitiated")
-      .withArgs(data.bar2.bar_number, data.bar2.warrant_number, MINT_INITIATED);
+      .withArgs(
+        data.bar2.bar_number,
+        data.bar2.warrant_number,
+        MINT_INITIATED,
+        anyValue
+      );
 
     expect(
       await cgoController_contract.txnStatusRecord(
@@ -311,7 +322,12 @@ describe("CGOController", function () {
       .initiateBurn(data.bar1.bar_number, data.bar1.warrant_number);
     await expect(_initiate_burn)
       .to.emit(cgoController_contract, "BurnInitiated")
-      .withArgs(data.bar1.bar_number, data.bar1.warrant_number, BURN_INITIATED);
+      .withArgs(
+        data.bar1.bar_number,
+        data.bar1.warrant_number,
+        BURN_INITIATED,
+        anyValue
+      );
     expect(
       await cgoController_contract.txnStatusRecord(
         data.bar1.bar_number,
@@ -346,7 +362,8 @@ describe("CGOController", function () {
         cgoController_contract.address,
         mintAmt,
         data.bar1.bar_number,
-        data.bar1.warrant_number
+        data.bar1.warrant_number,
+        anyValue
       );
     expect(
       await cgoController_contract.txnStatusRecord(
