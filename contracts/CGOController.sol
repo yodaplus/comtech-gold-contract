@@ -2,8 +2,9 @@
 
 pragma solidity >=0.7.0 <0.8.0;
 
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IERC20.sol";
+
+// For Remix Deployment
 // import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0-solc-0.7/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -16,6 +17,8 @@ contract CGOController is Ownable {
   address public initiatorAddr; // Initiator address
 
   address public executorAddr; // Executor address
+
+  address public minterWalletAddr; // Minter wallet address
 
   bool public isEditBarPaused = false; // Edit Bar status
 
@@ -121,6 +124,11 @@ contract CGOController is Ownable {
   // set executor address
   function setExecutorAddr(address _executorAddr) public onlyOwner {
     executorAddr = _executorAddr;
+  }
+
+  // set minter wallet address
+  function setMinterWalletAddr(address _minterWalletAddr) public onlyOwner {
+    minterWalletAddr = _minterWalletAddr;
   }
 
   // initiate mint with bar details (Bar_Number, Warrant_Number)
