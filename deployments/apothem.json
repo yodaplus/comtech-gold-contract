@@ -3,7 +3,7 @@
   "chainId": "51",
   "contracts": {
     "Goldtoken": {
-      "address": "0xb162D21D85d3E4d0C436645D9cd85853D871437A",
+      "address": "0xAa621133002E519918e4Bf08945600FCB79dbfC7",
       "abi": [
         {
           "inputs": [],
@@ -440,7 +440,7 @@
       ]
     },
     "CGOController": {
-      "address": "0xC2F655621AA4583857a2256ed40C8730E5779ab7",
+      "address": "0x7af454bEBA644ac40519B8c94cF5E40c88Ea52F2",
       "abi": [
         {
           "inputs": [
@@ -467,6 +467,12 @@
               "internalType": "string",
               "name": "Warrant_Number",
               "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "BarAdded",
@@ -498,6 +504,12 @@
               "internalType": "string",
               "name": "Warrant_Number",
               "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "BarBurn",
@@ -529,6 +541,12 @@
               "internalType": "string",
               "name": "Warrant_Number",
               "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "BarMint",
@@ -554,6 +572,12 @@
               "internalType": "enum CGOController.txnStatus",
               "name": "status",
               "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "BurnCancelled",
@@ -579,6 +603,12 @@
               "internalType": "enum CGOController.txnStatus",
               "name": "status",
               "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "BurnInitiated",
@@ -617,6 +647,12 @@
               "internalType": "enum CGOController.txnStatus",
               "name": "status",
               "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "MintCancelled",
@@ -642,6 +678,12 @@
               "internalType": "enum CGOController.txnStatus",
               "name": "status",
               "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
+              "type": "uint256"
             }
           ],
           "name": "MintInitiated",
@@ -679,6 +721,12 @@
               "indexed": false,
               "internalType": "uint256",
               "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "blockTimestamp",
               "type": "uint256"
             }
           ],
@@ -904,6 +952,19 @@
         },
         {
           "inputs": [],
+          "name": "minterWalletAddr",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "owner",
           "outputs": [
             {
@@ -975,6 +1036,19 @@
             }
           ],
           "name": "setInitiatorAddr",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_minterWalletAddr",
+              "type": "address"
+            }
+          ],
+          "name": "setMinterWalletAddr",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"

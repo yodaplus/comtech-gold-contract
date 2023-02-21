@@ -17,7 +17,7 @@ contract Goldtoken is ERC20Burnable, Ownable {
 
   event BlacklistUpdated(address indexed user, bool value);
 
-  constructor() ERC20("CGO TEST DUP", "CGO_T_D") Ownable() {
+  constructor() ERC20("C TEST DUP", "C_T_D") Ownable() {
     // _owner = _msgSender();
     _mint(msg.sender, 10000000 * (0**uint256(decimals())));
   }

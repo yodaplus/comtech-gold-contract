@@ -96,8 +96,13 @@ contract CGOController is Ownable {
 
   // Set token address and initiator address on contract creation
   constructor(address _tokenAddr) {
+    if (_tokenAddr == address(0)) {
+      revert("Invalid address");
+    }
     tokenAddr = _tokenAddr;
     initiatorAddr = msg.sender;
+    executorAddr = msg.sender;
+    minterWalletAddr = msg.sender;
   }
 
   // Modifier - only Initiator
@@ -117,23 +122,32 @@ contract CGOController is Ownable {
   }
 
   // set initiator address
-  function setInitiatorAddr(address _initiatorAddr) public onlyOwner {
+  function setInitiatorAddr(address _initiatorAddr) external onlyOwner {
+    if (_initiatorAddr == address(0)) {
+      revert("Invalid address");
+    }
     initiatorAddr = _initiatorAddr;
   }
 
   // set executor address
-  function setExecutorAddr(address _executorAddr) public onlyOwner {
+  function setExecutorAddr(address _executorAddr) external onlyOwner {
+    if (_executorAddr == address(0)) {
+      revert("Invalid address");
+    }
     executorAddr = _executorAddr;
   }
 
   // set minter wallet address
-  function setMinterWalletAddr(address _minterWalletAddr) public onlyOwner {
+  function setMinterWalletAddr(address _minterWalletAddr) external onlyOwner {
+    if (_minterWalletAddr == address(0)) {
+      revert("Invalid address");
+    }
     minterWalletAddr = _minterWalletAddr;
   }
 
   // initiate mint with bar details (Bar_Number, Warrant_Number)
   function initiateMint(string memory Bar_Number, string memory Warrant_Number)
-    public
+    external
     onlyInitiator
   {
     // check for burn initiation OR complete request
@@ -170,7 +184,7 @@ contract CGOController is Ownable {
   function cancelInitiateMint(
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyExecutor {
+  ) external onlyExecutor {
     // check for burn initiation OR complete request
     if (
       (txnStatusRecord[Bar_Number][Warrant_Number] ==
@@ -208,9 +222,11 @@ contract CGOController is Ownable {
     uint256 amount,
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyExecutor {
+  ) external onlyExecutor {
     // mint function call on CGO token contract
-    IERC20(tokenAddr).mint(to, amount * 1e18);
+    if (to != minterWalletAddr || to == address(0)) {
+      revert("Invalid Mint address");
+    }
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) ==
       keccak256(abi.encodePacked(Warrant_Number))
@@ -234,11 +250,12 @@ contract CGOController is Ownable {
       Warrant_Number,
       block.timestamp
     );
+    IERC20(tokenAddr).mint(to, amount * 1e18);
   }
 
   // initiate burn with bar details (Bar_Number, Warrant_Number)
   function initiateBurn(string memory Bar_Number, string memory Warrant_Number)
-    public
+    external
     onlyInitiator
   {
     // check inititation request
@@ -276,7 +293,7 @@ contract CGOController is Ownable {
   function cancelInitiateBurn(
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyExecutor {
+  ) external onlyExecutor {
     // check inititation request
     if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
       revert("Insufficient CGO Balance");
@@ -314,7 +331,7 @@ contract CGOController is Ownable {
     uint256 amount,
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyExecutor {
+  ) external onlyExecutor {
     if (
       keccak256(abi.encodePacked(barNumWarrantNum[Bar_Number])) !=
       keccak256(abi.encodePacked(Warrant_Number))
@@ -333,7 +350,6 @@ contract CGOController is Ownable {
       revert("Insufficient CGO Balance");
     }
     // burn function call on CGO token contract
-    IERC20(tokenAddr).burn(amount * 1e18);
     delete barNumWarrantNum[Bar_Number];
     txnStatusRecord[Bar_Number][Warrant_Number] = txnStatus.BURN_COMPLETED;
     emit BarBurn(
@@ -343,10 +359,15 @@ contract CGOController is Ownable {
       Warrant_Number,
       block.timestamp
     );
+    IERC20(tokenAddr).burn(amount * 1e18);
   }
 
   // Blacklist update function call on CGO token contract
-  function blacklistUpdate(address user, bool value) public virtual onlyOwner {
+  function blacklistUpdate(address user, bool value)
+    external
+    virtual
+    onlyOwner
+  {
     IERC20(tokenAddr).blacklistUpdate(user, value);
   }
 
@@ -356,7 +377,7 @@ contract CGOController is Ownable {
   function addBarNumWarrantNum(
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyOwner {
+  ) external onlyOwner {
     if (isEditBarPaused == true) {
       revert("Manual Bar Insertion is restricted");
     }
@@ -377,7 +398,7 @@ contract CGOController is Ownable {
   function removeBarNumWarrantNum(
     string memory Bar_Number,
     string memory Warrant_Number
-  ) public onlyOwner {
+  ) external onlyOwner {
     if (isEditBarPaused == true) {
       revert("Manual Bar Removal is restricted");
     }
@@ -394,19 +415,19 @@ contract CGOController is Ownable {
   // Pause/Unpause Edit Bar functionality
   // This function will be use for onboarding Existing Bars
   // This function will be depreciated after onboarding all existing bars
-  function pauseEditBar(bool status) public onlyOwner {
+  function pauseEditBar(bool status) external onlyOwner {
     isEditBarPaused = status;
     emit EditBarStatusPaused(status);
   }
 
   // Withdraw CGO tokens from contract to owner address using ERC20 interface
-  function withdrawFunds(address to, uint256 amount) public onlyOwner {
-    IERC20(tokenAddr).transfer(to, amount);
+  function withdrawFunds(address to, uint256 amount) external onlyOwner {
     emit WithdrawFunds(to, amount, block.timestamp);
+    IERC20(tokenAddr).transfer(to, amount);
   }
 
   // Transfer ownership of CGO token contract to new owner using ERC20 interface
-  function transferCgoOwnership(address newOwner) public onlyOwner {
+  function transferCgoOwnership(address newOwner) external onlyOwner {
     IERC20(tokenAddr).transferOwnership(newOwner);
   }
 }

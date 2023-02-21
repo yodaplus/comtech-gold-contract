@@ -26,7 +26,7 @@ describe("CGOController", function () {
     const CGO = await ethers.getContractFactory("Goldtoken");
     cgo_contract = await CGO.deploy();
     await cgo_contract.deployed();
-    expect(await cgo_contract.symbol()).to.equal("CGO_T_D");
+    expect(await cgo_contract.symbol()).to.equal("C_T_D");
   });
 
   it("Should deploy CGOController & verify the tknAddr, ownership", async function () {
@@ -58,6 +58,21 @@ describe("CGOController", function () {
     );
   });
 
+  // it("check for 0x address", async function () {
+  //   await expect(
+  //     cgoController_contract.setInitiatorAddr(
+  //       0x0000000000000000000000000000000000000000
+  //     )
+  //   ).to.be.revertedWith("Invalid address");
+  // });
+
+  it("set minter Address", async function () {
+    await cgoController_contract.setMinterWalletAddr(acc1.address);
+    expect(await cgoController_contract.minterWalletAddr()).to.equal(
+      acc1.address
+    );
+  });
+
   it("initiate mint should fail if not initiated by initiator", async function () {
     await expect(
       cgoController_contract
@@ -73,7 +88,7 @@ describe("CGOController", function () {
       cgoController_contract
         .connect(executor)
         .mint(
-          acc2.address,
+          acc1.address,
           1000,
           data.bar1.bar_number,
           data.bar1.warrant_number
@@ -177,12 +192,25 @@ describe("CGOController", function () {
       cgoController_contract
         .connect(acc1)
         .mint(
-          acc2.address,
+          acc1.address,
           1000,
           data.bar1.bar_number,
           data.bar1.warrant_number
         )
     ).to.be.revertedWith("Only Executor can call this function");
+  });
+
+  it("mint should revert with Invalid Mint address", async function () {
+    const _mint = await expect(
+      cgoController_contract
+        .connect(executor)
+        .mint(
+          acc2.address,
+          1000,
+          data.bar1.bar_number,
+          data.bar1.warrant_number
+        )
+    ).to.be.revertedWith("Invalid Mint address");
   });
 
   it("should mint the token", async function () {
