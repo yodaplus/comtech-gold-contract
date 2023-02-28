@@ -3,7 +3,7 @@
   "chainId": "50",
   "contracts": {
     "CGOController": {
-      "address": "0x31E73dd35021132E714CfC2e37c1590960474F14",
+      "address": "0x1614F4Bb66303f178098FC1E1Be89024089530f2",
       "abi": [
         {
           "inputs": [
