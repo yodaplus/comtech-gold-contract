@@ -12,7 +12,7 @@ module.exports = async ({ getNamedAccounts, deployments, network }) => {
   const { address: cgoController } = await deploy("CGOController", {
     from: owner,
     // args: [tknAddress],
-    args: ["0x731073599d495aC0e1F11407a85627c1Bdcbaab1"],
+    args: ["0x8f9920283470F52128bF11B0c14E798bE704fD15"],
   });
 
   console.log("CGOController deployed to:", cgoController);

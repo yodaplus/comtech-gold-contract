@@ -293,9 +293,9 @@ contract CGOController is Ownable {
     string memory Warrant_Number
   ) external onlyExecutor {
     // check inititation request
-    if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
-      revert("Insufficient CGO Balance");
-    }
+    // if (IERC20(tokenAddr).balanceOf(address(this)) < 1000 * 1e18) {
+    //   revert("Insufficient CGO Balance");
+    // }
     if (
       (txnStatusRecord[Bar_Number][Warrant_Number] !=
         txnStatus.BURN_INITIATED) &&
